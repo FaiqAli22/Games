@@ -1,0 +1,94 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Set screen width and height
+screen_width = 288
+screen_height = 512
+
+# Create screen
+screen = pygame.display.set_mode((screen_width, screen_height))
+
+# Set title
+pygame.display.set_caption("Flappy Bird")
+
+# Load images
+background_image = pygame.image.load("background.png")
+bird_image = pygame.image.load("bird.png")
+pipe_image = pygame.image.load("pipe.png")
+
+# Load sounds
+flap_sound = pygame.mixer.Sound("flap.wav")
+hit_sound = pygame.mixer.Sound("hit.wav")
+score_sound = pygame.mixer.Sound("score.wav")
+
+# Set constants
+GRAVITY = 0.2
+FLAP_STRENGTH = -5
+PIPE_VELOCITY = -3
+
+# Set bird and pipes to initial positions
+bird_x = 50
+bird_y = 250
+bird_velocity = 0
+
+pipe_width = pipe_image.get_width()
+pipe_height = pipe_image.get_height()
+pipe_gap = 100
+
+pipe_1_x = screen_width
+pipe_1_y = 0
+
+pipe_2_x = screen_width + screen_width // 2
+pipe_2_y = 0
+
+# Set font
+font = pygame.font.Font(None, 36)
+
+# Set clock
+clock = pygame.time.Clock()
+
+# Set initial score
+score = 0
+
+# Set game over flag
+game_over = False
+
+while True:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bird_velocity = FLAP_STRENGTH
+                flap_sound.play()
+
+    # Update bird velocity
+    bird_velocity += GRAVITY
+    bird_y += bird_velocity
+
+    # Update pipe positions
+    pipe_1_x += PIPE_VELOCITY
+    pipe_2_x += PIPE_VELOCITY
+
+    # Check for collision with bird
+    if (
+        bird_y < 0
+        or bird_y + bird_image.get_height() > screen_height
+        or (
+            (
+                bird_x + bird_image.get_width() > pipe_1_x
+                and bird_x < pipe_1_x + pipe_width
+            )
+            and (bird_y < pipe_1_y + pipe_height or bird_y + bird_image.get_height() > pipe_1_y + pipe_gap)
+        )
+        or (
+            (
+                bird_x + bird_image.get_width() > pipe_2_x
+                and bird_x < pipe_2_x + pipe_width
+            )
+            and (bird_y < pipe_2_y +
